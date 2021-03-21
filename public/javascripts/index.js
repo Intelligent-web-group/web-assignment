@@ -40,13 +40,26 @@ function sendChatText() {
  * interface
  */
 function connectToRoom() {
+    // The .serializeArray() method creates a JavaScript array of objects
+    // https://api.jquery.com/serializearray/
+    const formArray= $("form").serializeArray();
+    const data={};
+    for (let index in formArray){
+        data[formArray[index].name]= formArray[index].value;
+    }
+    // const data = JSON.stringify($(this).serializeArray());
+    sendAjaxQuery('/', data);
+    // prevent the form from reloading the page (normal behaviour for forms)
+    event.preventDefault()
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
-    if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
-    initCanvas(socket, imageUrl);
-    hideLoginInterface(roomNo, name);
+    if (!name) {
+    } else {
+        initCanvas(socket, imageUrl);
+        hideLoginInterface(roomNo, name);
+    }
 }
 
 /**
@@ -77,3 +90,27 @@ function hideLoginInterface(room, userId) {
     document.getElementById('in_room').innerHTML= ' '+room;
 }
 
+function sendAjaxQuery(url, data) {
+    $.ajax({
+        url: url ,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        type: 'POST',
+        success: function (dataR) {
+            // no need to JSON parse the result, as we are using
+            // dataType:json, so JQuery knows it and unpacks the
+            // object for us before returning it
+            // in order to have the object printed by alert
+            // we need to JSON.stringify the object
+            document.getElementById('results').innerHTML= JSON.stringify(dataR);
+        },
+        error: function (response) {
+            // the error structure we passed is in the field responseText
+            // it is a string, even if we returned as JSON
+            // if you want o unpack it you must do:
+            // const dataR= JSON.parse(response.responseText)
+            alert (response.responseText);
+        }
+    });
+}
