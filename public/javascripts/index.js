@@ -55,7 +55,7 @@ function connectToRoom() {
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
     //@todo join the room
-    if (!name) {
+    if ((!name)||(!roomNo)) {
     } else {
         initCanvas(socket, imageUrl);
         hideLoginInterface(roomNo, name);
