@@ -87,3 +87,18 @@ async function getCachedData(username, date) {
     }
 }
 window.getCachedData= getCachedData;
+
+function getUsername(dataR) {
+    if (dataR.username == null && dataR.username === undefined)
+        return "unavailable";
+    else return dataR.username;
+}
+window.getUsername= getUsername;
+
+function getMessage(dataR) {
+    if (dataR.message == null && dataR.message === undefined)
+        return "unavailable";
+    else return dataR.message;
+}
+
+window.getMessage= getMessage;
