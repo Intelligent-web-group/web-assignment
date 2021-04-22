@@ -65,6 +65,11 @@
   },
   "components": {
     "schemas": {
+      "message": {
+        "type": "string",
+        "description": "the chat of users",
+        "example": "Today is Monday"
+      },
       "name": {
         "type": "string",
         "description": "name of a person",
@@ -76,7 +81,34 @@
         "example": "R4524"
       },
       "imageUrl": {
-        "type": ""
+        "type": "img",
+        "description": "the image want to discuss",
+        "example": "https://thumbs-prod.si-cdn.com/3sRnl0EzPPLCBQ8FzeyxiSt32oE=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/61/37/61375718-fb3a-4bd0-b0d7-a4f1585a4ede/housesofparliamentoverallarp.jpg"
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/name"
+          },
+          "message": {
+            "$ref": "#/components/schemas/message"
+          }
+        }
+      },
+      "chatRoom": {
+        "type": "object",
+        "properties": {
+          "roomNo": {
+            "$ref": "#/components/schemas/roomNo"
+          },
+          "imageUrl": {
+            "$ref": "#/components/schemas/imageUrl"
+          },
+          "user": {
+            "$ref": "#/components/schemas/user"
+          }
+        }
       },
       "Error": {
         "type": "object",

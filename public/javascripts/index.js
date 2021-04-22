@@ -15,9 +15,59 @@ function init() {
     document.getElementById('chat_interface').style.display = 'none';
     initChatSocket();
     initNewsSocket();
+    initChatHistory()
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
+
+
+/**
+ * called by the HTML onload
+ * showing any cached chat history data and declaring the service worker
+ */
+function initChatHistory(){
+    if ('indexedDB' in window) {
+        initDatabase();
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
+    loadData(false);
+}
+
+/**
+ * given the chat history created by the user, it will retrieve all the data from
+ * the server (or failing that) from the database
+ * @param forceReload true if the data is to be loaded from the server
+ */
+function loadData(forceReload){
+    var chatHistory=JSON.parse(localStorage.getItem('messages'));
+    chatHistory=removeDuplicates(chatHistory);
+    retrieveAllMessagesData(chatHistory, new Date().getTime(), forceReload);
+}
+
+
+/**
+ * it cycles through chat history and requests the data from the server for each
+ * user
+ * @param chatHistory chat history the user has requested
+ * @param date the date for the message(not in use)
+ * @param forceReload true if the data is to be retrieved from the server
+ */
+function retrieveAllMessagesData(chatHistory, date, forceReload){
+    refreshChatHistory();
+    for (let index in chatHistory)
+        loadMessageData(chatHistory[index], date, forceReload);
+}
+
+function loadMessageData(message, date, forceReload){
+
+}
+
+
+
+
+
 
 /**
  * called to generate a random room number
@@ -143,27 +193,53 @@ function hideLoginInterface(room, userId) {
     document.getElementById('in_room').innerHTML= ' '+room;
 }
 
-function sendAjaxQuery(url, data) {
-    $.ajax({
-        url: url ,
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        dataType: 'json',
-        type: 'POST',
-        success: function (dataR) {
-            // no need to JSON parse the result, as we are using
-            // dataType:json, so JQuery knows it and unpacks the
-            // object for us before returning it
-            // in order to have the object printed by alert
-            // we need to JSON.stringify the object
-            document.getElementById('results').innerHTML= JSON.stringify(dataR);
-        },
-        error: function (response) {
-            // the error structure we passed is in the field responseText
-            // it is a string, even if we returned as JSON
-            // if you want o unpack it you must do:
-            // const dataR= JSON.parse(response.responseText)
-            alert (response.responseText);
-        }
-    });
+/**
+ * given the sum data retrieved in the database, it returns all the numbers that have summed to a value X
+ * @param dataR the data returned by the db
+ */
+function addToResults(dataR) {
+    if (document.getElementById('results') != null) {
+        const row = document.createElement('div');
+        // appending a new row
+        document.getElementById('results').appendChild(row);
+        // formatting the row by applying css classes
+        row.classList.add('card');
+        row.classList.add('my_card');
+        row.classList.add('bg-faded');
+        // the following is far from ideal. we should really create divs using javascript
+        // rather than assigning innerHTML
+        row.innerHTML = "<div class='card-block'>" +
+            "<div class='row'>" +
+            "<div class='col-xs-2'><h4 class='card-title'>" + dataR.name + "</h4></div>" +
+            "<div class='col-xs-2'>:</div>" +
+            "<div class='col-xs-2'>" + dataR.message + "</div>" +
+            "<div class='col-xs-2'></div></div></div>";
+    }
 }
+
+    function sendAjaxQuery(url, data) {
+        $.ajax({
+            url: url,
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'POST',
+            success: function (dataR) {
+                // no need to JSON parse the result, as we are using
+                // dataType:json, so JQuery knows it and unpacks the
+                // object for us before returning it
+                // in order to have the object printed by alert
+                // we need to JSON.stringify the object
+                document.getElementById('results').innerHTML = JSON.stringify(dataR);
+            },
+            error: function (response) {
+                // the error structure we passed is in the field responseText
+                // it is a string, even if we returned as JSON
+                // if you want o unpack it you must do:
+                // const dataR= JSON.parse(response.responseText)
+                alert(response.responseText);
+            }
+        });
+}
+
+
