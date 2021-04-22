@@ -1,0 +1,126 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "web-assignment",
+    "version": "1.0",
+    "description": "User management API",
+    "termsOfService": "http://api_url/terms/",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/",
+      "description": "the only Local server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "log in the account and enter the communication room"
+        ],
+        "description": "enter the infomation of the user and enter the communication room",
+        "operationId": "roomNo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/roomNo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Correct enter the room",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/roomNo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Name is empty",
+                  "internal_code": "missing_parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "message": {
+        "type": "string",
+        "description": "the chat of users",
+        "example": "Today is Monday"
+      },
+      "name": {
+        "type": "string",
+        "description": "name of a person",
+        "example": "John"
+      },
+      "roomNo": {
+        "type": "string",
+        "description": "room number of the chat room",
+        "example": "R4524"
+      },
+      "imageUrl": {
+        "type": "img",
+        "description": "the image want to discuss",
+        "example": "https://thumbs-prod.si-cdn.com/3sRnl0EzPPLCBQ8FzeyxiSt32oE=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/61/37/61375718-fb3a-4bd0-b0d7-a4f1585a4ede/housesofparliamentoverallarp.jpg"
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/name"
+          },
+          "message": {
+            "$ref": "#/components/schemas/message"
+          }
+        }
+      },
+      "chatRoom": {
+        "type": "object",
+        "properties": {
+          "roomNo": {
+            "$ref": "#/components/schemas/roomNo"
+          },
+          "imageUrl": {
+            "$ref": "#/components/schemas/imageUrl"
+          },
+          "user": {
+            "$ref": "#/components/schemas/user"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "internal_code": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
