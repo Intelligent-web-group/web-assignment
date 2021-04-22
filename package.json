@@ -1,5 +1,5 @@
 {
-  "name": "week-3.c-socket.io-chat",
+  "name": "socketchat",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,6 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
-    "idb": "^6.0.0",
     "morgan": "~1.9.1",
     "socket.io": "^3.1.1"
   }
