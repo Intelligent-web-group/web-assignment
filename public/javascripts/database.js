@@ -18,9 +18,7 @@ async function initDatabase() {
                         keyPath: 'id',
                         autoIncrement: true
                     });
-                    messageDB.createIndex('roomNo', 'roomNo', {unique: false, multiEntry: true});
-                    messageDB.createIndex("name", "name");
-                    messageDB.createIndex("message", "message");
+                    messageDB.createIndex('message', 'message', {unique: false, multiEntry: true});
                 }
             }
         });
@@ -30,7 +28,7 @@ async function initDatabase() {
     window.initDatabase = initDatabase;
 }
 
-async function storeCachedData(roomNo, messageObject) {
+async function storeCachedData(messageObject) {
     console.log('inserting: '+JSON.stringify(messageObject));
     if (!db)
         await initDatabase();
@@ -42,23 +40,23 @@ async function storeCachedData(roomNo, messageObject) {
             await  tx.complete;
             console.log('added item to the store! '+ JSON.stringify(messageObject));
         } catch(error) {
-            localStorage.setItem(roomNo, JSON.stringify(messageObject));
+            console.log('error: I could not store the element. Reason: '+error);
         };
     }
-    else localStorage.setItem(roomNo, JSON.stringify(messageObject));
+    else localStorage.setItem(messageObject.message, JSON.stringify(messageObject));
 }
 window.storeCachedData= storeCachedData;
 
-async function getCachedData(roomNo, date) {
+async function getCachedData(roomNo, message) {
     if (!db)
         await initDatabase();
     if (db) {
         try {
-            console.log('fetching: ' + roomNo);
+            console.log('fetching: ' + message);
             let tx = await db.transaction(MESSAGE_STORE_NAME, 'readonly');
             let store = await tx.objectStore(MESSAGE_STORE_NAME);
-            let index = await store.index('roomNo');
-            let readingsList = await index.getAll(IDBKeyRange.only(roomNo));
+            let index = await store.index('message');
+            let readingsList = await index.getAll(IDBKeyRange.only(message));
             await tx.complete;
             let finalResults=[];
             if (readingsList && readingsList.length > 0) {
@@ -70,7 +68,7 @@ async function getCachedData(roomNo, date) {
                     finalResults.push(max);
                 return finalResults;
             } else {
-                const value = localStorage.getItem(roomNo);
+                const value = localStorage.getItem(message);
                 if (value == null)
                     return finalResults;
                 else finalResults.push(value);
@@ -80,7 +78,7 @@ async function getCachedData(roomNo, date) {
             console.log(error);
         }
     } else {
-        const value = localStorage.getItem(roomNo);
+        const value = localStorage.getItem(message);
         let finalResults=[];
         if (value == null)
             return finalResults;
@@ -89,25 +87,3 @@ async function getCachedData(roomNo, date) {
     }
 }
 window.getCachedData= getCachedData;
-
-function getRoomNumber(dataR){
-    if (dataR.roomNo == null && dataR.roomNo === undefined)
-        return "unavailable";
-    else return dataR.roomNo;
-}
-window.getRoomNumber= getRoomNumber
-
-function getName(dataR) {
-    if (dataR.name == null && dataR.name === undefined)
-        return "unavailable";
-    else return dataR.name;
-}
-window.getNname= getName;
-
-function getMessage(dataR) {
-    if (dataR.message == null && dataR.message === undefined)
-        return "unavailable";
-    else return dataR.message;
-}
-
-window.getMessage= getMessage;

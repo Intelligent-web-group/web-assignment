@@ -85,4 +85,4 @@ replaceTraps(oldTraps => ({
     has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop) }));
 
 
-export { deleteDB, openDB };
+export { openDB, deleteDB};
