@@ -18,7 +18,7 @@ async function initDatabase() {
                         keyPath: 'id',
                         autoIncrement: true
                     });
-                    messageDB.createIndex('message', 'message', {unique: false, multiEntry: true});
+                    messageDB.createIndex('roomNo', 'roomNo', {unique: false, multiEntry: true});
                 }
             }
         });
@@ -43,20 +43,20 @@ async function storeCachedData(messageObject) {
             console.log('error: I could not store the element. Reason: '+error);
         };
     }
-    else localStorage.setItem(messageObject.message, JSON.stringify(messageObject));
+    else localStorage.setItem(messageObject.roomNo, JSON.stringify(messageObject));
 }
 window.storeCachedData= storeCachedData;
 
-async function getCachedData(roomNo, message) {
+async function getCachedData(chatRoom) {
     if (!db)
         await initDatabase();
     if (db) {
         try {
-            console.log('fetching: ' + message);
+            console.log('fetching: ' + chatRoom);
             let tx = await db.transaction(MESSAGE_STORE_NAME, 'readonly');
             let store = await tx.objectStore(MESSAGE_STORE_NAME);
-            let index = await store.index('message');
-            let readingsList = await index.getAll(IDBKeyRange.only(message));
+            let index = await store.index('roomNo');
+            let readingsList = await index.getAll(IDBKeyRange.only(chatRoom));
             await tx.complete;
             let finalResults=[];
             if (readingsList && readingsList.length > 0) {
@@ -68,7 +68,7 @@ async function getCachedData(roomNo, message) {
                     finalResults.push(max);
                 return finalResults;
             } else {
-                const value = localStorage.getItem(message);
+                const value = localStorage.getItem(chatRoom);
                 if (value == null)
                     return finalResults;
                 else finalResults.push(value);
@@ -78,7 +78,7 @@ async function getCachedData(roomNo, message) {
             console.log(error);
         }
     } else {
-        const value = localStorage.getItem(message);
+        const value = localStorage.getItem(chatRoom);
         let finalResults=[];
         if (value == null)
             return finalResults;

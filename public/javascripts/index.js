@@ -1,6 +1,6 @@
 let name = null;
 let roomNo = null;
-let socket=null;
+let socket= null;
 let chat= io.connect('/chat');
 let news= io.connect('/news');
 
@@ -20,13 +20,12 @@ function init() {
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
 
-function initChatHistory() {
-    let data = getCachedData(roomNo, message)
-    for (let elem of data){
-
+async function initChatHistory() {
+    let data =await getCachedData(roomNo);
+    if (data && data.length>0){
+    for (let res of data)
+        chat.emit('chat', res.roomNo, res.name, res.chatText);
     }
-
-
 }
 
 /**
