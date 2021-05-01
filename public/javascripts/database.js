@@ -47,42 +47,41 @@ async function storeCachedData(messageObject) {
 }
 window.storeCachedData= storeCachedData;
 
-async function getCachedData(chatRoom) {
+async function getCachedData(roomNo) {
     if (!db)
         await initDatabase();
     if (db) {
         try {
-            console.log('fetching: ' + chatRoom);
+            console.log('fetching: ' + roomNo);
             let tx = await db.transaction(MESSAGE_STORE_NAME, 'readonly');
             let store = await tx.objectStore(MESSAGE_STORE_NAME);
             let index = await store.index('roomNo');
-            let readingsList = await index.getAll(IDBKeyRange.only(chatRoom));
+            let readingsList = await index.getAll(IDBKeyRange.only(roomNo));
             await tx.complete;
             let finalResults=[];
             if (readingsList && readingsList.length > 0) {
-                let max;
                 for (let elem of readingsList)
-                    if (!max || elem.date > max.date)
-                        max = elem;
-                if (max)
-                    finalResults.push(max);
+                    finalResults.push(elem);
+                console.log(finalResults);
                 return finalResults;
             } else {
-                const value = localStorage.getItem(chatRoom);
+                const value = localStorage.getItem(roomNo);
                 if (value == null)
                     return finalResults;
                 else finalResults.push(value);
+                console.log(finalResults);
                 return finalResults;
             }
         } catch (error) {
             console.log(error);
         }
     } else {
-        const value = localStorage.getItem(chatRoom);
+        const value = localStorage.getItem(roomNo);
         let finalResults=[];
         if (value == null)
             return finalResults;
         else finalResults.push(value);
+        console.log(finalResults);
         return finalResults;
     }
 }

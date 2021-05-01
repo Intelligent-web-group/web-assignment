@@ -21,7 +21,8 @@ function init() {
 }
 
 async function initChatHistory() {
-    let data =await getCachedData(roomNo);
+    let data =await getCachedData("R8809");
+    console.log(data)
     if (data && data.length>0){
     for (let res of data)
         chat.emit('chat', res.roomNo, res.name, res.chatText);
@@ -83,21 +84,12 @@ function sendChatText() {
  * interface
  */
 function connectToRoom() {
-    // The .serializeArray() method creates a JavaScript array of objects
-    // https://api.jquery.com/serializearray/
-    const formArray= $("form").serializeArray();
-    const data={};
-    for (let index in formArray){
-        data[formArray[index].name]= formArray[index].value;
-    }
-    // const data = JSON.stringify($(this).serializeArray());
-    sendAjaxQuery('/', data);
-    // prevent the form from reloading the page (normal behaviour for forms)
-    event.preventDefault()
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
     //@todo join the room
+    const data = JSON.stringify({roomNo: roomNo, name: name, imageUrl: imageUrl})
+    sendAjaxQuery("/", data)
     if ((!name)||(!roomNo)) {
     } else {
         initCanvas(socket, imageUrl);
@@ -156,7 +148,7 @@ function hideLoginInterface(room, userId) {
 function sendAjaxQuery(url, data) {
         $.ajax({
             url: url,
-            data: JSON.stringify(data),
+            data: data,
             contentType: 'application/json',
             dataType: 'json',
             type: 'POST',
@@ -166,7 +158,8 @@ function sendAjaxQuery(url, data) {
                 // object for us before returning it
                 // in order to have the object printed by alert
                 // we need to JSON.stringify the object
-                document.getElementById('results').innerHTML = JSON.stringify(dataR);
+                if (document.getElementById('offline_div') != null)
+                    document.getElementById('offline_div').style.display = 'none';
             },
             error: function (response) {
                 // the error structure we passed is in the field responseText
