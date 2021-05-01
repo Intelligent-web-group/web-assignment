@@ -24,7 +24,8 @@ async function initChatHistory(roomNo) {
     console.log(data)
     if (data && data.length>0){
     for (let res of data)
-        chat.emit('chat', res.roomNo, res.name, res.message);
+        //chat.emit('chat', res.roomNo, res.name, res.message);
+        writeOnChatHistory('<b>' + res.name + ':</b> ' + res.message);
     }
 }
 
