@@ -15,17 +15,16 @@ function init() {
     document.getElementById('chat_interface').style.display = 'none';
     initChatSocket();
     initNewsSocket();
-    initChatHistory()
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
 
-async function initChatHistory() {
-    let data =await getCachedData("R8809");
+async function initChatHistory(roomNo) {
+    let data =await getCachedData(roomNo);
     console.log(data)
     if (data && data.length>0){
     for (let res of data)
-        chat.emit('chat', res.roomNo, res.name, res.chatText);
+        chat.emit('chat', res.roomNo, res.name, res.message);
     }
 }
 
@@ -96,6 +95,7 @@ function connectToRoom() {
         hideLoginInterface(roomNo, name);
         chat.emit('create or join', roomNo, name);
         news.emit('create or join', roomNo, name);
+        initChatHistory(roomNo);
     }
 }
 

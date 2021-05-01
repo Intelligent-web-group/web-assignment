@@ -137,4 +137,5 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+
 }
