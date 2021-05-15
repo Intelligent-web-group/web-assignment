@@ -39,6 +39,8 @@ function initCanvas(sckt, imageUrl) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
                 // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
+                storeCachedData({roomNo: roomNo, name: name, message: chatText});
+
             }
         }
     });
@@ -102,8 +104,6 @@ function drawImageScaled(img, canvas, ctx) {
     let x = (canvas.width / 2) - (img.width / 2) * scale;
     let y = (canvas.height / 2) - (img.height / 2) * scale;
     ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-
 }
 
 
@@ -137,4 +137,5 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+
 }
