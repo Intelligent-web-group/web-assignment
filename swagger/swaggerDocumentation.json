@@ -85,6 +85,50 @@
         "description": "the image want to discuss",
         "example": "https://thumbs-prod.si-cdn.com/3sRnl0EzPPLCBQ8FzeyxiSt32oE=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/61/37/61375718-fb3a-4bd0-b0d7-a4f1585a4ede/housesofparliamentoverallarp.jpg"
       },
+      "title": {
+        "type": "string",
+        "description": "the title of image",
+        "example": "universiity of sheffield"
+      },
+      "description": {
+        "type": "string",
+        "description": "the description of image",
+        "example": "This is the image of university of sheffield"
+      },
+      "annotation": {
+        "type": "",
+        "description": "the annotation from the user",
+        "example": null
+      },
+      "imgaeBase64": {
+        "type": "Base64",
+        "description": "Connect Url to base64",
+        "example": null
+      },
+      "image": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/title"
+          },
+          "description": {
+            "$ref": "#/components/schemas/description"
+          },
+          "name": {
+            "$ref": "#/components/schemas/name"
+          },
+          "annotation": {
+            "$ref": "#/components/schemas/annotation"
+          },
+          "imageUrl": {
+            "$ref": "#/components/schemas/imageUrl"
+          },
+          "imageBase64": {
+            "$ref": "#/components/schemas/imgaeBase64"
+          }
+
+        }
+      },
       "user": {
         "type": "object",
         "properties": {
@@ -102,8 +146,8 @@
           "roomNo": {
             "$ref": "#/components/schemas/roomNo"
           },
-          "imageUrl": {
-            "$ref": "#/components/schemas/imageUrl"
+          "image": {
+            "$ref": "#/components/schemas/image"
           },
           "user": {
             "$ref": "#/components/schemas/user"
