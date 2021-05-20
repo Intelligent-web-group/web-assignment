@@ -92,11 +92,21 @@ function connectToRoom() {
     sendAjaxQuery("/", data)
     if ((!name)||(!roomNo)) {
     } else {
-        initCanvas(socket, imageUrl);
-        hideLoginInterface(roomNo, name);
-        chat.emit('create or join', roomNo, name);
-        news.emit('create or join', roomNo, name);
-        initChatHistory(roomNo);
+        if(!imageUrl){
+
+        }else{
+            //getBase64(imageUrl)
+            //    .then(function(base64){
+            //        //console.log(base64);//处理成功打印在控制台
+            //        }, function(err){
+                    //console.log(err);//打印异常信息
+            //});
+            initCanvas(socket, imageUrl);
+            hideLoginInterface(roomNo, name);
+            chat.emit('create or join', roomNo, name);
+            news.emit('create or join', roomNo, name);
+            initChatHistory(roomNo);
+        }
     }
 }
 
@@ -143,6 +153,29 @@ function hideLoginInterface(room, userId) {
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
+}
+
+function getBase64(img){
+    function getBase64Image(img,width,height) {//width、height调用时传入具体像素值，控制大小 ,不传则默认图像大小
+        var canvas = document.createElement("canvas");
+        canvas.width = width ? width : img.width;
+        canvas.height = height ? height : img.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataURL = canvas.toDataURL();
+        return dataURL;
+    }
+    var image = new Image();
+    image.crossOrigin = '';
+    image.src = img;
+    var deferred=$.Deferred();
+    if(img){
+        image.onload =function (){
+            deferred.resolve(getBase64Image(image));//将base64传给done上传处理
+        }
+        return deferred.promise();//问题要让onload完成后再return sessionStorage['imgTest']
+    }
 }
 
 
