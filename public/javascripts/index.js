@@ -1,8 +1,10 @@
 let name = null;
 let roomNo = null;
-let socket= null;
-let chat= io.connect('/chat');
-let news= io.connect('/news');
+let socket = null;
+let chat = io.connect('/chat');
+let news = io.connect('/news');
+
+window.chat = chat
 
 /**
  * called by <body onload>
@@ -10,23 +12,24 @@ let news= io.connect('/news');
  * plus the associated actions
  */
 function init() {
-    // it sets up the interface so that userId and room are selected
-    document.getElementById('initial_form').style.display = 'block';
-    document.getElementById('chat_interface').style.display = 'none';
-    initChatSocket();
-    initNewsSocket();
+  // it sets up the interface so that userId and room are selected
+  document.getElementById('initial_form').style.display = 'block';
+  document.getElementById('chat_interface').style.display = 'none';
+  initChatSocket();
+  initNewsSocket();
 
-    //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
+  //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
 
 async function initChatHistory(roomNo) {
-    let data =await getCachedData(roomNo);
-    console.log(data)
-    if (data && data.length>0){
+  window.roomNo = roomNo
+  let data = await getCachedData(roomNo);
+  console.log(data)
+  if (data && data.length > 0) {
     for (let res of data)
         //chat.emit('chat', res.roomNo, res.name, res.message);
-        writeOnChatHistory('<b>' + res.name + ':</b> ' + res.message);
-    }
+      writeOnChatHistory('<b>' + res.name + ':</b> ' + res.message);
+  }
 }
 
 /**
@@ -35,37 +38,37 @@ async function initChatHistory(roomNo) {
  * so to make sure that the room number is not accidentally repeated across uses
  */
 function generateRoom() {
-    roomNo = Math.round(Math.random() * 10000);
-    document.getElementById('roomNo').value = 'R' + roomNo;
+  roomNo = Math.round(Math.random() * 10000);
+  document.getElementById('roomNo').value = 'R' + roomNo;
 }
 
 function initChatSocket() {
-    chat.on('joined', function (room, userId) {
-        if (userId === name) {
-            hideLoginInterface(room, userId);
-        } else {
-            writeOnChatHistory('<b>' + userId + '</b>' + ' joined room ' + room);
-        }
-    });
-    chat.on('chat', function (room, userId, chatText) {
-        let who = userId
-        if (userId === name) who = 'Me';
-        writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-    });
+  chat.on('joined', function (room, userId) {
+    if (userId === name) {
+      hideLoginInterface(room, userId);
+    } else {
+      writeOnChatHistory('<b>' + userId + '</b>' + ' joined room ' + room);
+    }
+  });
+  chat.on('chat', function (room, userId, chatText) {
+    let who = userId
+    if (userId === name) who = 'Me';
+    writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+  });
 
 }
 
 
-function initNewsSocket(){
-    news.on('joined', function (room, userId) {
-        if (userId !== name) {
-            writeOnNewsHistory('<b>'+userId+'</b>' + ' joined news room ' + room);
-        }
-    });
+function initNewsSocket() {
+  news.on('joined', function (room, userId) {
+    if (userId !== name) {
+      writeOnNewsHistory('<b>' + userId + '</b>' + ' joined news room ' + room);
+    }
+  });
 
-    news.on('news', function (room, userId, newsText) {
-        writeOnNewsHistory('<b>' + userId + ':</b> ' + newsText);
-    });
+  news.on('news', function (room, userId, newsText) {
+    writeOnNewsHistory('<b>' + userId + ':</b> ' + newsText);
+  });
 }
 
 
@@ -74,47 +77,155 @@ function initNewsSocket(){
  * and sends the message via  socket
  */
 function sendChatText() {
-    let chatText = document.getElementById('chat_input').value;
-    // @todo send the chat message
-    chat.emit('chat', roomNo, name, chatText);
-    storeCachedData({roomNo: roomNo, name: name, message: chatText});
+  let chatText = document.getElementById('chat_input').value;
+  // @todo send the chat message
+  chat.emit('chat', roomNo, name, chatText);
+  storeCachedData({roomNo: roomNo, name: name, message: chatText});
 }
+
+function changeImg() {
+  let imageUrl = document.getElementById('chang_img_url').value;
+  let tempImage = new Image()
+  tempImage.src = imageUrl
+  tempImage.crossOrigin = "anonymous"
+
+  //updateCanvas(tempImage)
+  tempImage.addEventListener('load', () => {
+    // it takes time before the image size is computed and made available
+    // here we wait until the height is set, then we resize the canvas based on the size of the image
+    let poll = setInterval(function () {
+      if (tempImage.naturalHeight) {
+        clearInterval(poll);
+        // resize the canvas
+        let ratioX = 1;
+        let ratioY = 1;
+        // if the screen is smaller than the img size we have to reduce the image to fit
+        if (tempImage.clientWidth > window.innerWidth)
+          ratioX = window.innerWidth / tempImage.clientWidth;
+        if (tempImage.clientHeight > window.innerHeight)
+          ratioY = tempImage.clientHeight / window.innerHeight;
+        let ratio = Math.min(ratioX, ratioY);
+        // resize the canvas to fit the screen and the image
+        console.log(tempImage.width)
+        cvx.width = canvas.width = tempImage.naturalWidth * ratio;
+        cvx.height = canvas.height = tempImage.naturalHeight * ratio;
+        console.log(tempImage.naturalHeight)
+        // draw the image onto the canvas
+        drawImageScaled(tempImage, cvx, ctx);
+        // hide the image element as it is not needed
+        tempImage.style.display = 'none';
+        const imageData = cvx.toDataURL('image/jpeg')
+        $.post('/add', {roomNo: this.roomNo, imageData}, (res) => {
+          this.chat.emit('updateImage', this.roomNo)
+        })
+      }
+    }, 10);
+  });
+
+}
+
+window.chat.on('updateImage', () => {
+  $.get(`/get/${window.roomNo}`, (res) => {
+    let response = {
+      imageData: false
+    }
+    if (res) {
+      response = JSON.parse(res)
+    }
+    if (response.imageData) {
+      let imageUrl = response.imageData
+      updateImg(imageUrl)
+    }
+
+
+  })
+})
+
+function updateImg(data) {
+  let imageUrl = data;
+  let tempImage = new Image()
+  tempImage.src = imageUrl
+  tempImage.crossOrigin = "anonymous"
+
+  //updateCanvas(tempImage)
+  tempImage.addEventListener('load', () => {
+    // it takes time before the image size is computed and made available
+    // here we wait until the height is set, then we resize the canvas based on the size of the image
+    let poll = setInterval(function () {
+      if (tempImage.naturalHeight) {
+        clearInterval(poll);
+        // resize the canvas
+        let ratioX = 1;
+        let ratioY = 1;
+        // if the screen is smaller than the img size we have to reduce the image to fit
+        if (tempImage.clientWidth > window.innerWidth)
+          ratioX = window.innerWidth / tempImage.clientWidth;
+        if (tempImage.clientHeight > window.innerHeight)
+          ratioY = tempImage.clientHeight / window.innerHeight;
+        let ratio = Math.min(ratioX, ratioY);
+        // resize the canvas to fit the screen and the image
+        console.log(tempImage.width)
+        cvx.width = canvas.width = tempImage.naturalWidth * ratio;
+        cvx.height = canvas.height = tempImage.naturalHeight * ratio;
+        console.log(tempImage.naturalHeight)
+        // draw the image onto the canvas
+        drawImageScaled(tempImage, cvx, ctx);
+        // hide the image element as it is not needed
+        tempImage.style.display = 'none';
+      }
+    }, 10);
+  });
+
+}
+
 /**
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
 function connectToRoom() {
-    roomNo = document.getElementById('roomNo').value;
-    name = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
+  roomNo = document.getElementById('roomNo').value;
+  name = document.getElementById('name').value;
+  let imageUrl = document.getElementById('image_url').value;
+  $.get(`/get/${roomNo}`, (res) => {
+    let response = {
+      imageData: false
+    }
+    if (res) {
+      response = JSON.parse(res)
+    }
+    if (response.imageData) {
+      imageUrl = response.imageData
+    }
     //@todo join the room
     const data = JSON.stringify({roomNo: roomNo, name: name, imageUrl: imageUrl})
     sendAjaxQuery("/", data)
-    if ((!name)||(!roomNo)) {
+    if ((!name) || (!roomNo)) {
     } else {
-        initCanvas(socket, imageUrl);
-        hideLoginInterface(roomNo, name);
-        chat.emit('create or join', roomNo, name);
-        news.emit('create or join', roomNo, name);
-        initChatHistory(roomNo);
+      initCanvas(socket, imageUrl);
+      hideLoginInterface(roomNo, name);
+      chat.emit('create or join', roomNo, name);
+      news.emit('create or join', roomNo, name);
+      initChatHistory(roomNo);
     }
+  })
+
 }
 
 function writeOnChatHistory(text) {
-    let history = document.getElementById('chat_history');
-    let paragraph = document.createElement('p');
-    paragraph.innerHTML = text;
-    history.appendChild(paragraph);
-    document.getElementById('chat_input').value = '';
+  let history = document.getElementById('chat_history');
+  let paragraph = document.createElement('p');
+  paragraph.innerHTML = text;
+  history.appendChild(paragraph);
+  document.getElementById('chat_input').value = '';
 }
 
 
 function writeOnNewsHistory(text) {
-    let history = document.getElementById('news_history');
-    let paragraph = document.createElement('p');
-    paragraph.innerHTML = text;
-    history.appendChild(paragraph);
-    document.getElementById('news_input').value = '';
+  // let history = document.getElementById('news_history');
+  // let paragraph = document.createElement('p');
+  // paragraph.innerHTML = text;
+  // history.appendChild(paragraph);
+  // document.getElementById('news_input').value = '';
 }
 
 /**
@@ -123,14 +234,14 @@ function writeOnNewsHistory(text) {
  * @param text: the text to append
  */
 function writeOnHistory(text) {
-    if (text==='') return;
-    let history = document.getElementById('history');
-    let paragraph = document.createElement('p');
-    paragraph.innerHTML = text;
-    history.appendChild(paragraph);
-    // scroll to the last element
-    history.scrollTop = history.scrollHeight;
-    document.getElementById('chat_input').value = '';
+  if (text === '') return;
+  let history = document.getElementById('history');
+  let paragraph = document.createElement('p');
+  paragraph.innerHTML = text;
+  history.appendChild(paragraph);
+  // scroll to the last element
+  history.scrollTop = history.scrollHeight;
+  document.getElementById('chat_input').value = '';
 }
 
 /**
@@ -139,37 +250,37 @@ function writeOnHistory(text) {
  * @param userId the user name
  */
 function hideLoginInterface(room, userId) {
-    document.getElementById('initial_form').style.display = 'none';
-    document.getElementById('chat_interface').style.display = 'block';
-    document.getElementById('who_you_are').innerHTML= userId;
-    document.getElementById('in_room').innerHTML= ' '+room;
+  document.getElementById('initial_form').style.display = 'none';
+  document.getElementById('chat_interface').style.display = 'block';
+  document.getElementById('who_you_are').innerHTML = userId;
+  document.getElementById('in_room').innerHTML = ' ' + room;
 }
 
 
 function sendAjaxQuery(url, data) {
-        $.ajax({
-            url: url,
-            data: data,
-            contentType: 'application/json',
-            dataType: 'json',
-            type: 'POST',
-            success: function (dataR) {
-                // no need to JSON parse the result, as we are using
-                // dataType:json, so JQuery knows it and unpacks the
-                // object for us before returning it
-                // in order to have the object printed by alert
-                // we need to JSON.stringify the object
-                if (document.getElementById('offline_div') != null)
-                    document.getElementById('offline_div').style.display = 'none';
-            },
-            error: function (response) {
-                // the error structure we passed is in the field responseText
-                // it is a string, even if we returned as JSON
-                // if you want o unpack it you must do:
-                // const dataR= JSON.parse(response.responseText)
-                alert(response.responseText);
-            }
-        });
+  $.ajax({
+    url: url,
+    data: data,
+    contentType: 'application/json',
+    dataType: 'json',
+    type: 'POST',
+    success: function (dataR) {
+      // no need to JSON parse the result, as we are using
+      // dataType:json, so JQuery knows it and unpacks the
+      // object for us before returning it
+      // in order to have the object printed by alert
+      // we need to JSON.stringify the object
+      if (document.getElementById('offline_div') != null)
+        document.getElementById('offline_div').style.display = 'none';
+    },
+    error: function (response) {
+      // the error structure we passed is in the field responseText
+      // it is a string, even if we returned as JSON
+      // if you want o unpack it you must do:
+      // const dataR= JSON.parse(response.responseText)
+      alert(response.responseText);
+    }
+  });
 }
 
 
