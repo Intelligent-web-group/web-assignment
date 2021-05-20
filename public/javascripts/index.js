@@ -21,6 +21,13 @@ function init() {
   //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
 
+/**
+ * called to init the chat history
+ * @param roomNo
+ * @returns {Promise<void>}
+ * load the data in the indexedDB and show thr chat history when the user enter the room
+ */
+
 async function initChatHistory(roomNo) {
   window.roomNo = roomNo
   let data = await getCachedData(roomNo);
@@ -42,6 +49,10 @@ function generateRoom() {
   document.getElementById('roomNo').value = 'R' + roomNo;
 }
 
+/**
+ * it initialises the socket for /chat
+ */
+
 function initChatSocket() {
   chat.on('joined', function (room, userId) {
     if (userId === name) {
@@ -58,6 +69,12 @@ function initChatSocket() {
 
 }
 
+/**
+ * init the news
+ * if a new user enter the room or a user send a chat
+ * the canvas will generate a new
+ *
+ */
 
 function initNewsSocket() {
   news.on('joined', function (room, userId) {
@@ -75,6 +92,7 @@ function initNewsSocket() {
 /**
  * called when the Send button is pressed. It gets the text to send from the interface
  * and sends the message via  socket
+ * and store the data in indexedDB
  */
 function sendChatText() {
   let chatText = document.getElementById('chat_input').value;
@@ -82,6 +100,14 @@ function sendChatText() {
   chat.emit('chat', roomNo, name, chatText);
   storeCachedData({roomNo: roomNo, name: name, message: chatText});
 }
+
+/**
+ *
+ * called to change the image on the canvas
+ * If user wants to change the image, it will read the ImageUrl in the text field
+ * and update to the imageUrl and change the image in Canvas
+ *
+ */
 
 function changeImg() {
   let imageUrl = document.getElementById('chang_img_url').value;
@@ -124,6 +150,10 @@ function changeImg() {
 
 }
 
+/**
+ * called to update the image to Canvas
+ */
+
 window.chat.on('updateImage', () => {
   $.get(`/get/${window.roomNo}`, (res) => {
     let response = {
@@ -140,6 +170,13 @@ window.chat.on('updateImage', () => {
 
   })
 })
+
+/**
+ * called to show the image on the canvas
+ * called to
+ * @param data
+ *
+ */
 
 function updateImg(data) {
   let imageUrl = data;
@@ -210,6 +247,10 @@ function connectToRoom() {
   })
 
 }
+/**
+ * it appends the given html text to the history div
+ * @param text: teh text to append
+ */
 
 function writeOnChatHistory(text) {
   let history = document.getElementById('chat_history');
@@ -219,7 +260,10 @@ function writeOnChatHistory(text) {
   document.getElementById('chat_input').value = '';
 }
 
-
+/**
+ * it appends the given html text to the history div
+ * @param text: teh text to append
+ */
 function writeOnNewsHistory(text) {
   // let history = document.getElementById('news_history');
   // let paragraph = document.createElement('p');

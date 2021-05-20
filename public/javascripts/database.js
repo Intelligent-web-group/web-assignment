@@ -28,6 +28,12 @@ async function initDatabase() {
   window.initDatabase = initDatabase;
 }
 
+/**
+ * The function to store the data in the indexedDB including username, roomNo and message
+ * @param messageObject
+ * @returns {Promise<void>}
+ */
+
 async function storeCachedData(messageObject) {
   console.log('inserting: ' + JSON.stringify(messageObject));
   if (!db)
@@ -47,6 +53,13 @@ async function storeCachedData(messageObject) {
 }
 
 window.storeCachedData = storeCachedData;
+
+/**
+ * the function to get the data in the database
+ * @param roomNo
+ * @returns {Promise<[]>}
+ * read the chat history and show on thee canvas
+ */
 
 async function getCachedData(roomNo) {
   if (!db)
