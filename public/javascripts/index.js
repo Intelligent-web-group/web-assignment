@@ -401,7 +401,6 @@ function addToResults(dataR) {
         "<h3 class='result-name'>" + dataR.name + "</h3>" +
         "<h4 class='result-id'>" + dataR.id + "</h4>" +
         "<div class='result-description'>" + dataR.rc + "</div>" +
-        "<div class='result-url'>" + dataR.gc + "</div>" +
         "<div class='link'>" +
         "<a href='"+dataR.gc+"' target = '_blank'>Link to homepage</a >" +
         "</div>"

@@ -51,3 +51,20 @@ a {
     left: 0px;
     background-color: rgba(255, 0, 0, .1);
 }
+
+.kge-search-picker {
+    width: 50px;
+}
+
+.myRow {
+    display:inline-block;
+}
+
+div{
+    margin-top: 10px;
+}
+
+.resultPanel{
+    border: dotted gray 1px;
+    padding:10px
+}
