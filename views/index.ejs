@@ -7,8 +7,10 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
     <script src="/javascripts/database.js" type="module"></script>
+    <script src="/javascripts/annotationDatabase.js" type="module"></script>
     <script src="/javascripts/index.js"></script>
     <script src="/javascripts/canvas.js"></script>
+
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
     <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -56,16 +58,7 @@
         <div class="myRow" id="typeSet"></div>
     </div>
     <div>
-        <div class='resultPanel' id="resultPanel" style="display: none">
-            <h3 id="resultName"></h3>
-            <h4 id="resultId"></h4>
-            <div id="resultDescription"></div>
-            <div>
-                <a id="resultUrl" target="_blank">
-                    Link to Webpage
-                </a>
-            </div>
-        </div>
+        <div id="results"></div>
     </div>
     <!--    </div>-->
     <div id="chat_history" style="height: 33vh" class="boxed scrolling"></div>

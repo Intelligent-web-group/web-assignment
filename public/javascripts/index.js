@@ -43,12 +43,9 @@ function widgetInit(){
  */
 function selectItem(event){
   let row= event.row;
-  // document.getElementById('resultImage').src= row.json.image.url;
-  document.getElementById('resultId').innerText= 'id: '+row.id;
-  document.getElementById('resultName').innerText= row.name;
-  document.getElementById('resultDescription').innerText= row.rc;
-  document.getElementById("resultUrl").href= row.qc;
-  document.getElementById('resultPanel').style.display= 'block';
+  row.id = 'id: '+row.id;
+  addToResults(row);
+  storeAnnotationData({roomNo: roomNo, id:'id: '+row.id, name: row.name, rc: row.rc, gc: row.qc})
 }
 
 /**
@@ -81,6 +78,24 @@ async function initChatHistory(roomNo) {
     for (let res of data)
         //chat.emit('chat', res.roomNo, res.name, res.message);
       writeOnChatHistory('<b>' + res.name + ':</b> ' + res.message);
+  }
+}
+
+/**
+ * called to init the chat history
+ * @param roomNo
+ * @returns {Promise<void>}
+ * load the data in the indexedDB and show thr chat history when the user enter the room
+ */
+
+async function initAnnotation(roomNo) {
+  window.roomNo = roomNo
+  let data = await getAnnotationData(roomNo);
+  console.log(data)
+  if (data && data.length > 0) {
+    for (let res of data)
+        //chat.emit('chat', res.roomNo, res.name, res.message);
+      addToResults(res)
   }
 }
 
@@ -288,6 +303,7 @@ function connectToRoom() {
       chat.emit('create or join', roomNo, name);
       news.emit('create or join', roomNo, name);
       initChatHistory(roomNo);
+      initAnnotation(roomNo);
     }
   })
 
@@ -365,6 +381,32 @@ function sendAjaxQuery(url, data) {
       alert('Error: ' + error.message);
     }
   });
+}
+/**
+ * given the sum data retrieved in the database, it returns all the numbers that have summed to a value X
+ * @param dataR the data returned by the db
+ */
+function addToResults(dataR) {
+  if (document.getElementById('results') != null) {
+    const row = document.createElement('div');
+    // appending a new row
+    document.getElementById('results').appendChild(row);
+    // formatting the row by applying css classes
+    row.classList.add('card');
+    row.classList.add('my_card');
+    row.classList.add('bg-faded');
+    // the following is far from ideal. we should really create divs using javascript
+    // rather than assigning innerHTML
+    row.innerHTML = "<div class='resultPanel'>" +
+        "<h3 class='result-name'>" + dataR.name + "</h3>" +
+        "<h4 class='result-id'>" + dataR.id + "</h4>" +
+        "<div class='result-description'>" + dataR.rc + "</div>" +
+        "<div class='result-url'>" + dataR.gc + "</div>" +
+        "<div class='link'>" +
+        "<a href='"+dataR.gc+"' target = '_blank'>Link to homepage</a >" +
+        "</div>"
+        "<div class='col-xs-7'></div></div>";
+  }
 }
 
 
