@@ -85,10 +85,35 @@
         "description": "the image want to discuss",
         "example": "https://thumbs-prod.si-cdn.com/3sRnl0EzPPLCBQ8FzeyxiSt32oE=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/61/37/61375718-fb3a-4bd0-b0d7-a4f1585a4ede/housesofparliamentoverallarp.jpg"
       },
+      "knowledgeGraphType": {
+        "type": "string",
+        "description": "the type of knowledge graph",
+        "example": "person"
+      },
+      "knowledgeGraphId": {
+        "type": "string",
+        "description": "the id of knowledge graph",
+        "example": "/m/01jzhl"
+      },
+      "knowledgeGraphName": {
+        "type": "string",
+        "description": "name of knowledge graph",
+        "example": "Yao ming"
+      },
+      "knowledgeGraphDescription": {
+        "type": "string",
+        "description": "the description of knowledge graph",
+        "example": "the nba star from china"
+      },
+      "knowledgeGraphUrl": {
+        "type": "string",
+        "description": "the Url of knowledge graph wiki",
+        "example": "https://en.wikipedia.org/wiki/Yao_Ming"
+      },
       "title": {
         "type": "string",
         "description": "the title of image",
-        "example": "universiity of sheffield"
+        "example": "university of sheffield"
       },
       "description": {
         "type": "string",
@@ -96,9 +121,9 @@
         "example": "This is the image of university of sheffield"
       },
       "annotation": {
-        "type": "",
+        "type": "Base64",
         "description": "the annotation from the user",
-        "example": null
+        "example": ""
       },
       "imgaeBase64": {
         "type": "Base64",
@@ -126,7 +151,6 @@
           "imageBase64": {
             "$ref": "#/components/schemas/imgaeBase64"
           }
-
         }
       },
       "chatMessage": {
@@ -140,9 +164,32 @@
           }
         }
       },
+      "knowledgeGraph": {
+        "type": "object",
+        "properties": {
+          "knowledgeGraphType": {
+            "$ref": "#/components/schemas/knowledgeGraphType"
+          },
+          "knowledgeGraphId": {
+            "$ref": "#/components/schemas/knowledgeGraphId"
+          },
+          "knowledgeGraphName": {
+            "$ref": "#/components/schemas/knowledgeGraphName"
+          },
+          "knowledgeGraphDescription": {
+            "$ref": "#/components/schemas/knowledgeGraphDescription"
+          },
+          "knowledgeGraphUrl": {
+            "$ref": "#/components/schemas/knowledgeGraphUrl"
+          }
+        }
+      },
       "chatRoom": {
         "type": "object",
         "properties": {
+          "name": {
+            "$ref": "#/components/schemas/name"
+          },
           "roomNo": {
             "$ref": "#/components/schemas/roomNo"
           },
@@ -151,6 +198,9 @@
           },
           "chatMessage": {
             "$ref": "#/components/schemas/chatMessage"
+          },
+          "knowledgeGraph": {
+            "$ref": "#/components/schemas/knowledgeGraph"
           }
         }
       },

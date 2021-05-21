@@ -46,7 +46,7 @@ function selectItem(event){
   row.id = 'id: '+row.id;
   console.log(row.gc);
   addToResults(row);
-  storeAnnotationData({roomNo: roomNo, id:'id: '+row.id, name: row.name, rc: row.rc, qc: row.qc})
+  storeAnnotationData({roomNo: roomNo, id: row.id, name: row.name, rc: row.rc, qc: row.qc})
 }
 
 /**
@@ -284,6 +284,8 @@ function connectToRoom() {
   roomNo = document.getElementById('roomNo').value;
   name = document.getElementById('name').value;
   let imageUrl = document.getElementById('image_url').value;
+  const data = JSON.stringify({roomNo: roomNo, name: name, imageUrl: imageUrl})
+  sendAjaxQuery("/", data)
   $.get(`/get/${roomNo}`, (res) => {
     let response = {
       imageData: false
@@ -294,9 +296,6 @@ function connectToRoom() {
     if (response.imageData) {
       imageUrl = response.imageData
     }
-    //@todo join the room
-    const data = JSON.stringify({roomNo: roomNo, name: name, imageUrl: imageUrl})
-    sendAjaxQuery("/", data)
     if ((!name) || (!roomNo)) {
     } else {
       initCanvas(socket, imageUrl);
