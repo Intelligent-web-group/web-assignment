@@ -303,26 +303,21 @@ function hideLoginInterface(room, userId) {
 
 function sendAjaxQuery(url, data) {
   $.ajax({
-    url: url,
+    url: url ,
     data: data,
-    contentType: 'application/json',
     dataType: 'json',
     type: 'POST',
     success: function (dataR) {
       // no need to JSON parse the result, as we are using
       // dataType:json, so JQuery knows it and unpacks the
       // object for us before returning it
+      var ret = dataR;
       // in order to have the object printed by alert
-      // we need to JSON.stringify the object
-      if (document.getElementById('offline_div') != null)
-        document.getElementById('offline_div').style.display = 'none';
+      // we need to JSON stringify the object
+      document.getElementById('results').innerHTML= JSON.stringify(ret);
     },
-    error: function (response) {
-      // the error structure we passed is in the field responseText
-      // it is a string, even if we returned as JSON
-      // if you want o unpack it you must do:
-      // const dataR= JSON.parse(response.responseText)
-      alert(response.responseText);
+    error: function (xhr, status, error) {
+      alert('Error: ' + error.message);
     }
   });
 }

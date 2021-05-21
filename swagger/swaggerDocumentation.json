@@ -45,7 +45,7 @@
               }
             }
           },
-          "401": {
+          "403": {
             "description": "Missing parameters",
             "content": {
               "application/json": {
@@ -129,7 +129,7 @@
 
         }
       },
-      "user": {
+      "chatMessage": {
         "type": "object",
         "properties": {
           "name": {
@@ -149,8 +149,8 @@
           "image": {
             "$ref": "#/components/schemas/image"
           },
-          "user": {
-            "$ref": "#/components/schemas/user"
+          "chatMessage": {
+            "$ref": "#/components/schemas/chatMessage"
           }
         }
       },
