@@ -44,8 +44,9 @@ function widgetInit(){
 function selectItem(event){
   let row= event.row;
   row.id = 'id: '+row.id;
+  console.log(row.gc);
   addToResults(row);
-  storeAnnotationData({roomNo: roomNo, id:'id: '+row.id, name: row.name, rc: row.rc, gc: row.qc})
+  storeAnnotationData({roomNo: roomNo, id:'id: '+row.id, name: row.name, rc: row.rc, qc: row.qc})
 }
 
 /**
@@ -364,21 +365,26 @@ function hideLoginInterface(room, userId) {
 
 function sendAjaxQuery(url, data) {
   $.ajax({
-    url: url ,
+    url: url,
     data: data,
+    contentType: 'application/json',
     dataType: 'json',
     type: 'POST',
     success: function (dataR) {
       // no need to JSON parse the result, as we are using
       // dataType:json, so JQuery knows it and unpacks the
       // object for us before returning it
-      var ret = dataR;
       // in order to have the object printed by alert
-      // we need to JSON stringify the object
-      document.getElementById('results').innerHTML= JSON.stringify(ret);
+      // we need to JSON.stringify the object
+      if (document.getElementById('offline_div') != null)
+        document.getElementById('offline_div').style.display = 'none';
     },
-    error: function (xhr, status, error) {
-      alert('Error: ' + error.message);
+    error: function (response) {
+      // the error structure we passed is in the field responseText
+      // it is a string, even if we returned as JSON
+      // if you want o unpack it you must do:
+      // const dataR= JSON.parse(response.responseText)
+      alert(response.responseText);
     }
   });
 }
@@ -395,6 +401,7 @@ function addToResults(dataR) {
     row.classList.add('card');
     row.classList.add('my_card');
     row.classList.add('bg-faded');
+    console.log(dataR.gc);
     // the following is far from ideal. we should really create divs using javascript
     // rather than assigning innerHTML
     row.innerHTML = "<div class='resultPanel'>" +
@@ -402,7 +409,7 @@ function addToResults(dataR) {
         "<h4 class='result-id'>" + dataR.id + "</h4>" +
         "<div class='result-description'>" + dataR.rc + "</div>" +
         "<div class='link'>" +
-        "<a href='"+dataR.gc+"' target = '_blank'>Link to homepage</a >" +
+        "<a href='"+dataR.qc+"' target = '_blank'>Link to homepage</a >" +
         "</div>"
         "<div class='col-xs-7'></div></div>";
   }
