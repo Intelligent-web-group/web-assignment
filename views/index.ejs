@@ -43,27 +43,29 @@
         <div id="in_room" style="display: inline"></div>
     </div>
     </p>
-    <div id="img_box" style="width: 100vw; height: 50vh">
-        <img id="image" height="100%">
-        <canvas id="canvas"></canvas>
-    </div>
-    <div class="myRow" id="typeForm">
-        <label for="myType">Type: </label><input type="text" id="myType">
-        <button onclick="widgetInit()">Set type</button>
-    </div>
-    <div class="myRow" id='widget' style="display: none">
-        <label for="myInput">Search for: </label><input type="text" id="myInput">
-        <div class="myRow" id="typeSet"></div>
-    </div>
-    <div>
-        <div class='resultPanel' id="resultPanel" style="display: none">
-            <h3 id="resultName"></h3>
-            <h4 id="resultId"></h4>
-            <div id="resultDescription"></div>
-            <div>
-                <a id="resultUrl" target="_blank">
-                    Link to Webpage
-                </a>
+    <div id="KG_part">
+        <div id="img_box" style="width: 100vw; height: 50vh; float: left">
+            <img id="image" height="100%">
+            <canvas id="canvas"></canvas>
+        </div>
+        <div class="myRow" id="typeForm" style="float: left">
+            <label for="myType">Type: </label><input type="text" id="myType">
+            <button onclick="widgetInit()">Set type</button>
+        </div>
+        <div class="myRow" id='widget' style="display: none">
+            <label for="myInput">Search for: </label><input type="text" id="myInput">
+            <div class="myRow" id="typeSet"></div>
+        </div>
+        <div>
+            <div class='resultPanel' id="resultPanel" style="display: none">
+                <h3 id="resultName"></h3>
+                <h4 id="resultId"></h4>
+                <div id="resultDescription"></div>
+                <div>
+                    <a id="resultUrl" target="_blank">
+                        Link to Webpage
+                    </a>
+                </div>
             </div>
         </div>
     </div>
