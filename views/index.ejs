@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title><%= title %></title>
     <script src="/socket.io/socket.io.js"></script>
@@ -9,6 +9,13 @@
     <script src="/javascripts/database.js" type="module"></script>
     <script src="/javascripts/index.js"></script>
     <script src="/javascripts/canvas.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script type="application/javascript" src="/javascripts/index.js"></script>
 </head>
 <body onload="init()">
 <div id="initial_form" style="display: block">
@@ -39,6 +46,26 @@
     <div id="img_box" style="width: 100vw; height: 50vh">
         <img id="image" height="100%">
         <canvas id="canvas"></canvas>
+    </div>
+    <div class="myRow" id="typeForm">
+        <label for="myType">Type: </label><input type="text" id="myType">
+        <button onclick="widgetInit()">Set type</button>
+    </div>
+    <div class="myRow" id='widget' style="display: none">
+        <label for="myInput">Search for: </label><input type="text" id="myInput">
+        <div class="myRow" id="typeSet"></div>
+    </div>
+    <div>
+        <div class='resultPanel' id="resultPanel" style="display: none">
+            <h3 id="resultName"></h3>
+            <h4 id="resultId"></h4>
+            <div id="resultDescription"></div>
+            <div>
+                <a id="resultUrl" target="_blank">
+                    Link to Webpage
+                </a>
+            </div>
+        </div>
     </div>
     <!--    </div>-->
     <div id="chat_history" style="height: 33vh" class="boxed scrolling"></div>

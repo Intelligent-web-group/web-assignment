@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-const mongoDB = 'mongodb://root:root@localhost:27017/characters?authSource=admin';
+const mongoDB = 'mongodb://localhost:27017/characters?authSource=admin';
 
 mongoose.Promise = global.Promise;
 try {
